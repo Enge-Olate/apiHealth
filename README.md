@@ -81,3 +81,28 @@ O projeto conta com cobertura de testes automatizados para garantir a integridad
 **Via Docker:**
 ```bash
 docker-compose exec django-web python manage.py test
+
+## 🧠 Decisões Técnicas
+
+Nesta seção, detalho as escolhas arquiteturais e ferramentas adotadas para garantir segurança, escalabilidade e qualidade do código.
+
+### 1. Autenticação e Segurança (JWT)
+Optamos por utilizar **JSON Web Tokens (JWT)** via a biblioteca `djangorestframework-simplejwt` para gerenciar a autenticação.
+
+* **Por que JWT?** Diferente da autenticação por sessão (cookies), o JWT é *stateless*. Isso significa que o servidor não precisa armazenar o estado da sessão do usuário, o que facilita a escalabilidade horizontal da aplicação e permite que o back-end sirva múltiplos front-ends (Web, Mobile, IoT) sem acoplamento.
+* **Fluxo de Tokens:** Implementamos o padrão de `Access Token` (curta duração) e `Refresh Token` (longa duração). Isso aumenta a segurança, pois caso um token de acesso seja comprometido, ele expira rapidamente, exigindo uma revalidação segura via refresh token.
+
+### 2. Banco de Dados (PostgreSQL)
+O **PostgreSQL** foi o banco de dados relacional escolhido para este projeto.
+
+* **Integridade e Robustez:** O Postgres é amplamente reconhecido por sua conformidade com ACID e confiabilidade em ambientes de produção.
+* **Suporte a JSONB:** Utilizamos o Postgres também pela sua capacidade eficiente de armazenar e consultar dados não estruturados (JSON Binary). Isso nos permite flexibilidade em tabelas que requerem esquemas dinâmicos sem precisar recorrer a um banco NoSQL separado.
+* **Compatibilidade com Docker:** A facilidade de orquestração via Docker Compose garante que o ambiente de desenvolvimento seja idêntico ao de produção, evitando erros de compatibilidade de drivers ou versões SQL.
+
+### 3. Estratégia de Testes (APITestCase)
+A qualidade do código é assegurada através de testes automatizados utilizando a classe `APITestCase` do Django REST Framework.
+
+* **Testes de Integração vs. Unitários:** Ao invés de testar apenas métodos isolados dos Models ou Serializers, priorizamos o `APITestCase` para simular o ciclo completo de uma requisição HTTP. Isso garante que a rota, a permissão, a validação do serializer e a persistência no banco estão funcionando em conjunto.
+* **O que testamos:**
+    * **Happy Path:** Requisições válidas retornando status `200 OK` ou `201 Created`.
+    * **Edge Cases:** Tentativas de envio de dados inválidos ou incompletos (`400 Bad Request`).
