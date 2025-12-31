@@ -31,7 +31,7 @@ router.register(r'consulta', ConsultaViewset)
 router.register(r'profissionais', ProfissionalViewset)
 
 urlpatterns = [
-    path('admin', admin.site.urls),
+    path('', admin.site.urls),
     path('app/', include(router.urls)),
     path('app/token/', TokenObtainPairView.as_view(), name= 'token_obtain_pair'),
     path('app/token/refresh/', TokenRefreshView.as_view(), name='token_refresh')
