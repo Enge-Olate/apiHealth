@@ -10,4 +10,5 @@ class Paciente(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.nome}"
+        return f"{self.nome}, {self.cpf}, {self.data_nascimento}, {self.telefone}, {self.criado_em}"
+        
